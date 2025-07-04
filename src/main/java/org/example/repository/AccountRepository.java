@@ -4,6 +4,7 @@ import org.example.exception.AccountNotFoundException;
 import org.example.exception.AccountWithInvestmentException;
 import org.example.exception.PixInUseException;
 import org.example.model.AccountWallet;
+import org.example.model.Investment;
 
 import java.util.List;
 
@@ -50,10 +51,15 @@ public class AccountRepository {
         target.addMoney(source.reduceMoney(amount), source.getService(), message);
     }
 
+    public List<AccountWallet> list(){
+        return this.accounts;
+    }
+
     public AccountWallet findByPix(final String pix) {
         return accounts.stream()
                 .filter(a -> a.getPix().contains(pix))
                 .findFirst()
                 .orElseThrow(() -> new AccountNotFoundException("Conta não encontrada com o PIX: " + pix));
     }
+
 }
