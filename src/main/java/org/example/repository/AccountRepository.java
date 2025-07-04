@@ -5,9 +5,14 @@ import org.example.exception.AccountWithInvestmentException;
 import org.example.exception.PixInUseException;
 import org.example.model.AccountWallet;
 import org.example.model.Investment;
+import org.example.model.MoneyAudit;
 
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.example.repository.CommonsRepository.checkFundsForTransaction;
 
 public class AccountRepository {
@@ -60,6 +65,14 @@ public class AccountRepository {
                 .filter(a -> a.getPix().contains(pix))
                 .findFirst()
                 .orElseThrow(() -> new AccountNotFoundException("Conta não encontrada com o PIX: " + pix));
+    }
+    
+    public Map<OffsetDateTime, List<MoneyAudit>> getHistory(final String pix){
+        var wallet = findByPix(pix);
+        var audit = wallet.getFinancialTransactions();
+
+        return audit.stream()
+                .collect(Collectors.groupingBy(t -> t.createdAt().truncatedTo(SECONDS)));
     }
 
 }
